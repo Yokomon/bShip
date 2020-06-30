@@ -1,7 +1,3 @@
-window.omload = init;
-
-var init = function(){
-};
 var inputBtn = document.getElementById("fireButton");
 var inputMsg= document.getElementById("guessInput");
 var view ={
@@ -30,6 +26,7 @@ var view ={
 		inputBtn.outerHTML="<input type=button id=fireButton value=FIRE!>";
 	}
 };
+
 view.displayMessage("Hello Corp, Commencing test Phase 1. Do you copy??");
 var model = {
 	boardSize: 7,
@@ -130,3 +127,38 @@ function parseGuess(guess){
 	}
 	return null;
 }
+var controller = {
+	guesses:0,
+	processGuess: function(guess){
+		var location = parseGuess(guess);
+		if(location){
+			this.guesses++;
+			var hit = model.fire(location);
+			if(hit && model.shipsSunk === model.numShips){
+				view.displayMessage("You sank all the battleships, in " + guesses + " guesses");
+			}
+		}
+	}
+}
+var firebutton = document.getElementById("fireButton");
+var inputForm = document.getElementById("guessInput");
+function init(){
+	firebutton.onclick = handleFireBtn;
+	inputForm.onkeypress = handleInput;
+	// finally we randomly call a random location for the ship
+	model.generateShipLocations();
+}
+function handleFireBtn(){
+	var guessInput = document.getElementById("guessInput");
+	var guess = guessInput.value;
+	controller.processGuess(guess);
+	guessInput.value = "";
+
+}
+function handleInput(e){
+	if(e.keyCode === 13){
+		firebutton.click()
+		return false;
+	}
+}
+window.onload = init;
